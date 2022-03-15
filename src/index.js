@@ -6,13 +6,13 @@ const app = express()
 const handleErrors = require("../src/middlewares/handleErrors");
 //models
 const sequelize = require("./models/sequelize");
-
+const cors =require("cors")
 app.use(express.json())
 app.use(morgan("tiny"));
 const userRouter = require("./router/userRouter");
 
 app.use(userRouter)
-
+app.use(cors)
 
 const prefix = process.env.API_PREFIX
 
