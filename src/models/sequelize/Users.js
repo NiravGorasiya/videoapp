@@ -7,27 +7,26 @@ try {
     module.exports = {
         defineModel: async(sequelize) => {
             const Users = await sequelize.define(TABLENAME, {
-                passportInfoId: {
+                Id: {
                     type: DataTypes.INTEGER,
                     primaryKey: true,
                     autoIncrement: true
                 },
-                status: {
-                    type: DataTypes.ENUM(['Y', 'N', 'A']),
-                    allowNull: true,
-                    defaultValue: 'N'
-                },
-                passportNumber: {
+                email: {
                     type: DataTypes.STRING,
-                    allowNull: true,
-                },
-                leadId: {
-                    type: DataTypes.INTEGER,
                     allowNull: false,
                 },
-                expiresOn: {
-                    type: DataTypes.DATEONLY,
-                    allowNull: true
+                password: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                fullname: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                username: {
+                    type: DataTypes.STRING,
+                    allowNull: false
                 }
             }, {
                 tableName: TABLENAME
@@ -37,11 +36,8 @@ try {
                 const queryInterface = sequelize.getQueryInterface()
             }
 
-
-            Users.associate = async(models, sequelize) => {
-                
+            Users.associate = async(models, sequelize) => {    
             }
-
             return Users
         },
         associations: async(sequelize) => {},
