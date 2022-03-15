@@ -15,15 +15,16 @@ router.post("/signup",registerv, expressValidatorMw, async (req, res, next) => {
 });
 
 router.post("/login",async (req, res, next) => {
-    const { email, password,username } = req.body
+    const ctrlData = req.body
     try {
-        const { token, user } = await loginController({ email, password ,username})
+        const { token,userdata } = await loginController(ctrlData)
         if (token) {
-            res.send({ token })
+            return res.status(200).json({status:"success",message:"user Login successfull",data:userdata ,token})
         }
     } catch (e) {
         return next(e)
     }
+
 });
 
 module.exports = router

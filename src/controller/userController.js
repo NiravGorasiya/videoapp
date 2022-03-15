@@ -1,12 +1,16 @@
 const { findModelItemQ } = require("../queries/generic/index")
 const sequelize = require("../models/sequelize/")
 const bcrypt = require("bcrypt")
-const {Op} =require("sequelize")
+const { Op } = require("sequelize")
+const { signJWT } = require("../utils/jwtutils");
+const { UserNotFoundError } = require("../errors/")
+const { comparePasswords } = require("../utils/passwordutility")
+
 const userSignupCtrl = async (ctrlData) => {
     try {
-        const user = await sequelize.models.Users.findOne({ 
-            where:{
-                [Op.or]: [{email: ctrlData.email },{username: ctrlData.username}]
+        const user = await sequelize.models.Users.findOne({
+            where: {
+                [Op.or]: [{ email: ctrlData.email }, { username: ctrlData.username }]
             }
         })
         if (user) {
@@ -27,15 +31,24 @@ const userSignupCtrl = async (ctrlData) => {
     }
 };
 
-const loginController = async ({ email, password,username }, next) => {
+const loginController = async (ctrlData) => {
     try {
-        const user = await sequelize.models.Users.findOne({ 
-            where:{
-                [Op.or]: [{email: ctrlData.email },{username: ctrlData.username}]
+        const user = await sequelize.models.Users.findOne({
+            where: {
+                email: ctrlData.email
             }
         })
-        if (user) {
-            throw new Error('Email or username already exists');
+        if (!user) {
+            throw new Error('wrong credentials');
+        } else {
+            const result = await comparePasswords(ctrlData.password, user.password);
+            if (result === true) {
+                //generate jwt token
+                const loginJwt = signJWT({ user: { userId: user.Id } });
+                return { token: loginJwt, userdata: user };
+            } else {
+                throw new Error('wrong credentials');
+            }
         }
     } catch (e) {
         throw e;
